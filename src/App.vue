@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { World, Model, ThirdPersonCamera, types, Find, Plane, LingoEditor, Cube} from "lingo3d-vue"
+  import { World, Model, ThirdPersonCamera, types, Find, Plane, LingoEditor, Cube, SvgMesh} from "lingo3d-vue"
   import { ref } from "vue"
   
   const characterPose = ref("idle")
@@ -42,6 +42,21 @@
       :min-polar-angle="90" 
       :max-polar-angle="110"
     >
+      <!-- <Model
+        name="character"
+        src="basic/src.glb"
+        physics="character"
+        ref="characterRef"
+        :x="0"
+        :y="-50"
+        :z="0"
+        :scale="characterScale"
+        :animations="{ idle : 'basic/idle.glb', walking: 'basic/walk.glb' }"
+        :animation="characterPose"
+        :look-to="[position.x, undefined, position.z, 0.1]"
+        :move-to="[position.x, undefined, position.z, 5]"
+        @move-to-end="handleMoveToEnd"
+      /> -->
       <Model
         name="character"
         src="basic/src.glb"
@@ -58,14 +73,20 @@
         @move-to-end="handleMoveToEnd"
       />
     </ThirdPersonCamera>
-    <Cube
+    <SvgMesh
+      src="arrow.svg"
+      :metalness-factor="1"
+      :roughness-factor="0.4"
+      :roughness="0.4"
+      :scale-z="0.19"
+      color="#ff4e4e"
+      emissive-color="#223056"
       v-if="characterPose=='walking'"
-      color="red"
       :x="position.x"
-      :y="position.y"
+      :y="position.y + 50"
       :z="position.z"
-      >
-    </Cube>
+      :animation="{rotationY: [0, 45, 90, 135, 180, 225, 270, 315, 360]}"
+    />
   </World>
   <!-- <LingoEditor></LingoEditor> -->
 </template>
