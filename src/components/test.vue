@@ -121,19 +121,17 @@
                 uniform mat4 uModelMatrix;  //模型矩阵，用于定位模型位置
                 uniform mat4 uReverseModelMatrix; //模型矩阵的逆转置
 
-                varying vec4 v_Color;       //颜色varying类变量，用于向片段着色器传递颜色属性
                 varying vec3 v_Normal;
                 varying vec4 v_Position;
                 varying vec2 v_TextCoord;
 
                 void main() {
-                gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aVertexPosition;  //点坐标位置
-                //法向量进行归一化
-                v_Normal = normalize(vec3(uReverseModelMatrix * aNormal));
-                //变化后的坐标 -> 世界坐标
-                v_Position = uModelMatrix * aVertexPosition;
-                v_TextCoord = aTextCoord;
-                v_Color = aVertexColor;        //点的颜色
+                    gl_Position = uProjectionMatrix * uViewMatrix * uModelMatrix * aVertexPosition;  //点坐标位置
+                    //法向量进行归一化
+                    v_Normal = normalize(vec3(uReverseModelMatrix * aNormal));
+                    //变化后的坐标 -> 世界坐标
+                    v_Position = uModelMatrix * aVertexPosition;
+                    v_TextCoord = aTextCoord;
                 }
             `;
 
@@ -150,7 +148,6 @@
                 
                 varying vec3 v_Normal;
                 varying vec4 v_Position;
-                varying vec4 v_Color;
                 varying vec2 v_TextCoord;
             
                 float beckmannDistribution(
@@ -206,9 +203,6 @@
                         roughness,
                         fresnel);
                     vec3 temp=diffuse + ambient;
-                    //  temp[0]=max(temp[0]+power,0.0);
-                    //  temp[1]=max(temp[1]+power,0.0);
-                    //  temp[2]=max(temp[2]+power,0.0);
                     gl_FragColor = vec4(temp, v_Color.a);
                 }
             `;
@@ -251,7 +245,6 @@
                 program: shaderProgram_text,
                 attribLocations: {
                     vertexPosition: gl.getAttribLocation(shaderProgram_text, 'aVertexPosition'),
-                    vertexColor: gl.getAttribLocation(shaderProgram_text, 'aVertexColor'),
                     normal: gl.getAttribLocation(shaderProgram_text, 'aNormal'),
                     TextCoord: gl.getAttribLocation(shaderProgram_text, 'aTextCoord'),
                 },
@@ -281,9 +274,15 @@
             var eye = [0, 0, 6];
             var target = [0, 0, 0];
             var up = [0, 2, 0];
-           
-            const cubeBuffer = Tool.initOneCube(gl, cube_center, size, color);
 
+            const cubeBuffer = Tool.initOneCube(gl, cube_center, size, color);
+            const cubeTextBuffer = Tool.initTextCube(gl, cube_center, size);
+            Tool.initTextures(gl,"webgl/front.png", 0);
+            Tool.initTextures(gl,"webgl/right.png", 1);
+            Tool.initTextures(gl,"webgl/up.png", 2);
+            Tool.initTextures(gl,"webgl/left.png", 3);
+            Tool.initTextures(gl,"webgl/down.png", 4);
+            Tool.initTextures(gl,"webgl/back.png", 5);
             Tool.allClear(gl);
             var then = 0;
             // Draw the scene repeatedly
@@ -297,9 +296,11 @@
                 const deltaTime = now - then;
                 then = now;
                 const modelMatrix = Tool.setModelMatrix([0, 0, 0], rotation);
+                const modelMatrix_text = Tool.setModelMatrix([0, 0, 0], rotation);
                 const projectionMatrix = Tool.setProjectionMatrix(gl);
                 requestAnimationFrame(render);
-                Tool.draw(gl, programInfo, cubeBuffer, modelMatrix, viewMatrix, projectionMatrix, lightColor, lightPosition, eye, ambientLight, roughness, fresnel);
+                // Tool.draw(gl, programInfo, cubeBuffer, modelMatrix, viewMatrix, projectionMatrix, lightColor, lightPosition, eye, ambientLight, roughness, fresnel);
+                Tool.draw_text(gl, programInfo_text, cubeTextBuffer, modelMatrix_text, viewMatrix, projectionMatrix, lightColor, lightPosition,  eye, ambientLight, roughness, fresnel);
             }
             requestAnimationFrame(render);
         }
