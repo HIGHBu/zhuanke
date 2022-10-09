@@ -263,8 +263,8 @@
                 },
             };
 
-            var cube_center = [1.75, 0.5, -0.75];
-            var size = [2.5, 1.0, 1.5];
+            var cube_center = [0, 0, 0];
+            var size = [2.0 , 3.5, 2.0];
             var color = [0.0, 0.0, 0.0, 1.0]; // Black
             var rotation = new Object();
             rotation.rad = 0;
@@ -284,23 +284,28 @@
             Tool.initTextures(gl,"webgl/down.png", 4);
             Tool.initTextures(gl,"webgl/back.png", 5);
             Tool.allClear(gl);
+
+            var Rotation = 0.0;
             var then = 0;
             // Draw the scene repeatedly
             function render(now) {
+                now *= 0.001;  // convert to seconds
+                const deltaTime = now - then;
+                then = now;
+                Rotation += deltaTime;
+
                 var lightColor = vec3.fromValues(1.0, 1.0, 1.0);
                 var ambientLight = vec3.fromValues(1.0, 1.0, 1.0);
                 var lightPosition = vec3.fromValues(0.0, 0.0, 0.0);
                 var viewMatrix = mat4.create();
                 mat4.lookAt(viewMatrix, eye, target, up);
-                now *= 0.001;  // convert to seconds
-                const deltaTime = now - then;
-                then = now;
+
                 const modelMatrix = Tool.setModelMatrix([0, 0, 0], rotation);
                 const modelMatrix_text = Tool.setModelMatrix([0, 0, 0], rotation);
                 const projectionMatrix = Tool.setProjectionMatrix(gl);
                 requestAnimationFrame(render);
                 // Tool.draw(gl, programInfo, cubeBuffer, modelMatrix, viewMatrix, projectionMatrix, lightColor, lightPosition, eye, ambientLight, roughness, fresnel);
-                Tool.draw_text(gl, programInfo_text, cubeTextBuffer, modelMatrix_text, viewMatrix, projectionMatrix, lightColor, lightPosition,  eye, ambientLight, roughness, fresnel);
+                Tool.draw_text(gl, programInfo_text, cubeTextBuffer, modelMatrix_text, viewMatrix, projectionMatrix, lightColor, lightPosition,  eye, ambientLight, roughness, fresnel, Rotation);
             }
             requestAnimationFrame(render);
         }

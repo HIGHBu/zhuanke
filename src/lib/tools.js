@@ -447,7 +447,12 @@ class Tools {
         }
     }
 
-    static draw_text(gl, programInfo, buffers, modelMatrix, viewMatrix, projectionMatrix, lightColor, lightPosition, eye, ambientLight, roughness, fresnel) {
+    static draw_text(gl, programInfo, buffers, modelMatrix, viewMatrix, projectionMatrix, lightColor, lightPosition, eye, ambientLight, roughness, fresnel, Rotation) {
+        // 旋转动作
+        mat4.rotate(modelMatrix,  // destination matrix
+            modelMatrix,  // matrix to rotate
+            Rotation,     // amount to rotate in radians
+            [0, 1, 0]);       // axis to rotate around (Y));
         //为webGL设置从缓冲区抽取位置数据的属性值，将其放入着色器信息
         {
             const numComponents = 3;//每次取出3个数值
@@ -573,7 +578,7 @@ class Tools {
     }
 
     static setProjectionMatrix(gl) {
-        const fieldOfView = 45 * Math.PI / 180;   // in radians
+        const fieldOfView = 60 * Math.PI / 180;   // in radians
         const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
         const zNear = 0.1;
         const zFar = 100.0;
