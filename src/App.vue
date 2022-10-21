@@ -5,15 +5,29 @@
 
   const characterPose = ref("idle")
   const characterRef = ref<types.Model>()
-  const galleryScale = 20
+  const galleryScale = 15
   const characterScale = 0.2
-  const position = ref({x: 0, y: 0, z: 0})
+  const position = ref({x: 550, y: 0, z: 40})
   const visibleDistance = 500
-  const initPosition = ref({x: 0, y: 200, z: 0})
+  const initPosition = ref({x: 550, y: 150, z: 400})
+  const Frames = [
+    {id: "0", name: "Frame_000", texture: ""},
+    {id: "1", name: "Frame_001", texture: ""},
+    {id: "2", name: "Frame_002", texture: ""},
+    {id: "3", name: "Frame_003", texture: ""},
+  ]
+  const GamePoints = [
+    {id: 0, name: "game_point_000"},
+    {id: 1, name: "game_point_001"},
+    {id: 2, name: "game_point_002"},
+    {id: 3, name: "game_point_003"},
+    {id: 4, name: "game_point_004"},
+    
+  ]
   var persons = [
     {
       x: 0,
-      y: 0,
+      y: 200,
       z: 0,
       animate: "idle",
       src: "basic",
@@ -21,7 +35,7 @@
     },
     {
       x: 200,
-      y: 0,
+      y: 200,
       z: 0,
       animate: "walking",
       src: "basic",
@@ -39,13 +53,19 @@
   const handleMoveToEnd = () => {
     characterPose.value = "idle"
   }
-</script>
-
-<script lang="ts">
-  export default {
-    computed: {
-    },
-  };
+  const handleGameClick = (id: number) => {
+    if (id == 0) {
+      console.log("第零个游戏点")
+    } else if (id == 1) {
+      console.log("第一个游戏点")
+    } else if (id == 2) {
+      console.log("第二个游戏点")
+    } else if (id == 3) {
+      console.log("第三个游戏点")
+    } else if (id == 4) {
+      console.log("第四个游戏点")
+    }
+  }
 </script>
 
 <template>
@@ -53,12 +73,26 @@
   <World>
     <Model
       name="gallery"
-      src="gallery_0925.glb"
+      src="gallery_1021_1.glb"
       :scale="galleryScale"
       physics="map"
-      @click="handleClick"
       :y="600"
     >
+      <Find
+        name="gallery_floor"
+        @click="handleClick"
+      />
+      <Find
+        v-for="(frame, id) in Frames"
+        name="frame.name"
+        texture="frame.texture"
+      ></Find>
+      <Find
+        v-for="(game_point, id) in GamePoints"
+        name="game_point.name"
+        @click="handleGameClick(game_point.id)"
+      >
+      </Find>
     </Model> 
     <ThirdPersonCamera
       :active="true"
@@ -67,20 +101,6 @@
       :min-polar-angle="90" 
       :max-polar-angle="110"
     >
-      <!-- <Model
-        name="character"
-        src="c.glb"
-        physics="character"
-        ref="characterRef"
-        :x="0"
-        :y="250"
-        :z="0"
-        :scale="characterScale"
-        :look-to="[position.x, undefined, position.z, 0.1]"
-        :move-to="[position.x, undefined, position.z, 5]"
-        @move-to-end="handleMoveToEnd"
-      /> -->
-
       <Model
         name="character"
         src="basic/src.glb"
@@ -111,7 +131,10 @@
       :z="person.z"
       :animations="{ idle : person.src + '/idle.glb', walking: person.src + '/walk.glb' }"
       :animation="person.animate"
-    />
+    >
+      <Sprite>
+      </Sprite>
+    </Model>
     <SvgMesh
       src="arrow.svg"
       :metalness-factor="1"
